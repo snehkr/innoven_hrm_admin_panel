@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import api from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 
+import TableSkeleton from '../components/TableSkeleton';
+
 const STATUSES = [
   'PENDING', 'SERVICE_CENTER_ASSIGNED', 'ENGINEER_ASSIGNED',
   'ENGINEER_VISITING', 'BARCODE_VERIFIED', 'OTP_SENT', 'OTP_VERIFIED', 'INSTALLATION_COMPLETED'
@@ -29,16 +31,6 @@ const StatusBadge = ({ status }) => {
     </span>
   );
 };
-
-const SkeletonRow = () => (
-  <tr>
-    {[...Array(6)].map((_, i) => (
-      <td key={i} className="px-6 py-4">
-        <div className="h-4 bg-slate-200 rounded animate-pulse" />
-      </td>
-    ))}
-  </tr>
-);
 
 // Timeline Drawer
 const TimelineDrawer = ({ request, onClose }) => {
@@ -277,29 +269,30 @@ const Installations = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-slate-50">
-              <tr>
-                {['Ticket', 'Product', 'Customer', 'Status', 'Engineer', 'Actions'].map(h => (
-                  <th key={h} className={`px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider ${h === 'Actions' ? 'text-right' : 'text-left'}`}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
-              {loading ? (
-                [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
-              ) : requests.length === 0 ? (
+          {loading ? (
+            <TableSkeleton rows={8} columns={6} />
+          ) : (
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead className="bg-slate-50">
                 <tr>
-                  <td colSpan="6" className="px-6 py-16 text-center">
-                    <div className="flex flex-col items-center gap-2">
-                      <Wrench className="w-10 h-10 text-slate-300" />
-                      <p className="text-slate-500 font-medium">No installation requests found</p>
-                      <p className="text-slate-400 text-sm">Try adjusting your search or filters</p>
-                    </div>
-                  </td>
+                  {['Ticket', 'Product', 'Customer', 'Status', 'Engineer', 'Actions'].map(h => (
+                    <th key={h} className={`px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider ${h === 'Actions' ? 'text-right' : 'text-left'}`}>{h}</th>
+                  ))}
                 </tr>
-              ) : (
-                requests.map((req) => (
+              </thead>
+              <tbody className="bg-white divide-y divide-slate-200">
+                {requests.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-16 text-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <Wrench className="w-10 h-10 text-slate-300" />
+                        <p className="text-slate-500 font-medium">No installation requests found</p>
+                        <p className="text-slate-400 text-sm">Try adjusting your search or filters</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  requests.map((req) => (
                   <tr key={req._id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap font-mono text-sm font-semibold text-slate-900">{req.ticket_number}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -350,7 +343,8 @@ const Installations = () => {
               )}
             </tbody>
           </table>
-        </div>
+        )}
+      </div>
 
         {/* Pagination */}
         {pagination.pages > 1 && (

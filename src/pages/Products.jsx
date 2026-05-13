@@ -3,6 +3,7 @@ import { PackagePlus, Search, X } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
+import TableSkeleton from '../components/TableSkeleton';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -75,42 +76,44 @@ const Products = () => {
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-slate-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Model Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Serial Number</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Barcode</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Warranty</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Registered Date</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
-              {loading ? (
-                <tr><td colSpan="5" className="px-6 py-4 text-center text-slate-500">Loading...</td></tr>
-              ) : products.length === 0 ? (
-                <tr><td colSpan="5" className="px-6 py-4 text-center text-slate-500">No products found</td></tr>
-              ) : (
-                products.map((product) => (
-                  <tr key={product._id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap font-medium text-slate-900">{product.model_name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-slate-500 font-mono text-sm">{product.serial_number}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {product.barcode_image_url ? (
-                        <a href={product.barcode_image_url} target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium">View Barcode</a>
-                      ) : (
-                        <span className="text-slate-400 text-sm">N/A</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-sm">{product.warranty_period_months} mo</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-sm">
-                      {new Date(product.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+          {loading ? (
+            <TableSkeleton rows={8} columns={5} />
+          ) : (
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead className="bg-slate-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Model Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Serial Number</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Barcode</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Warranty</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Registered Date</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-slate-200">
+                {products.length === 0 ? (
+                  <tr><td colSpan="5" className="px-6 py-8 text-center text-slate-500 italic">No products found.</td></tr>
+                ) : (
+                  products.map((product) => (
+                    <tr key={product._id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap font-medium text-slate-900">{product.model_name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-slate-500 font-mono text-sm">{product.serial_number}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {product.barcode_image_url ? (
+                          <a href={product.barcode_image_url} target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium">View Barcode</a>
+                        ) : (
+                          <span className="text-slate-400 text-sm">N/A</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-sm">{product.warranty_period_months} mo</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-sm">
+                        {new Date(product.createdAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 

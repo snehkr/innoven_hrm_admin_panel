@@ -3,6 +3,7 @@ import { Users, Search, UserPlus, X, Briefcase, Mail, Phone, Lock, Hash } from '
 import api from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
+import TableSkeleton from '../components/TableSkeleton';
 
 const Engineers = () => {
   const [engineers, setEngineers] = useState([]);
@@ -75,23 +76,24 @@ const Engineers = () => {
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-slate-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Engineer</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Contact</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Jobs Count</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
-              {loading ? (
-                <tr><td colSpan="5" className="px-6 py-8 text-center text-slate-500">Loading...</td></tr>
-              ) : engineers.length === 0 ? (
-                <tr><td colSpan="5" className="px-6 py-8 text-center text-slate-500">No engineers found</td></tr>
-              ) : (
-                engineers.map((engineer) => (
+          {loading ? (
+            <TableSkeleton rows={8} columns={5} />
+          ) : (
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead className="bg-slate-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Engineer</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Contact</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Jobs Count</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-slate-200">
+                {engineers.length === 0 ? (
+                  <tr><td colSpan="5" className="px-6 py-8 text-center text-slate-500 italic">No engineers found.</td></tr>
+                ) : (
+                  engineers.map((engineer) => (
                   <tr key={engineer._id} className="hover:bg-slate-50">
                     <td className="px-6 py-4">
                       <div className="flex items-center">
@@ -110,7 +112,7 @@ const Engineers = () => {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 border border-slate-200">
-                        <Briefcase className="w-3 h-3 mr-1"/> 0 Active
+                        <Briefcase className="w-3 h-3 mr-1"/> {engineer.activeJobs || 0} Active
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -127,8 +129,9 @@ const Engineers = () => {
               )}
             </tbody>
           </table>
-        </div>
+        )}
       </div>
+    </div>
 
       {/* Add Engineer Modal */}
       {showModal && (

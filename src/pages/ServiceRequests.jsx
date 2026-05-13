@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import TableSkeleton from '../components/TableSkeleton';
 
 // Timeline Drawer
 const TimelineDrawer = ({ request, onClose }) => {
@@ -202,85 +203,87 @@ const ServiceRequests = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-slate-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Ticket Info</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Customer</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Product</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Engineer</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
-              {loading ? (
-                <tr><td colSpan="5" className="px-6 py-8 text-center text-slate-500">Loading...</td></tr>
-              ) : requests.length === 0 ? (
-                <tr><td colSpan="5" className="px-6 py-8 text-center text-slate-500">No requests found</td></tr>
-              ) : (
-                requests.map((req) => (
-                  <tr key={req._id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4">
-                      <p className="font-bold text-slate-900">{req.ticket_number}</p>
-                      <div className="mt-1">{getRequestTypeBadge(req.request_type)}</div>
-                      <p className="text-xs text-slate-400 mt-1">{new Date(req.createdAt).toLocaleDateString()}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm font-medium text-slate-900">{req.customer_id?.name || 'N/A'}</p>
-                      <p className="text-xs text-slate-500">{req.customer_id?.email}</p>
-                      <p className="text-xs text-slate-500">{req.customer_id?.phone}</p>
-                      <p className="text-xs text-slate-400">{req.customer_id?.city}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm font-medium text-slate-900">{req.product_id?.model_name || 'N/A'}</p>
-                      <p className="text-xs text-slate-500 font-mono">{req.product_id?.serial_number}</p>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(req.status)}
-                    </td>
-                    <td className="px-6 py-4">
-                      {req.assigned_engineer ? (
-                        <p className="text-sm font-medium text-slate-900">{req.assigned_engineer.name}</p>
-                      ) : (
-                        (user.role === 'super_admin' || user.role === 'service_center') ? (
-                          <button 
-                            onClick={() => setAssignTarget(req)}
-                            className="flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded border border-blue-100 transition-colors"
-                          >
-                            <UserCheck className="w-3.5 h-3.5 mr-1" />
-                            Assign
-                          </button>
+          {loading ? (
+            <TableSkeleton rows={8} columns={6} />
+          ) : (
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead className="bg-slate-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Ticket Info</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Customer</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Product</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Engineer</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-slate-200">
+                {requests.length === 0 ? (
+                  <tr><td colSpan="6" className="px-6 py-8 text-center text-slate-500 italic">No requests found matching your filters.</td></tr>
+                ) : (
+                  requests.map((req) => (
+                    <tr key={req._id} className="hover:bg-slate-50">
+                      <td className="px-6 py-4">
+                        <p className="font-bold text-slate-900">{req.ticket_number}</p>
+                        <div className="mt-1">{getRequestTypeBadge(req.request_type)}</div>
+                        <p className="text-xs text-slate-400 mt-1">{new Date(req.createdAt).toLocaleDateString()}</p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-sm font-medium text-slate-900">{req.customer_id?.name || 'N/A'}</p>
+                        <p className="text-xs text-slate-500">{req.customer_id?.email}</p>
+                        <p className="text-xs text-slate-500">{req.customer_id?.phone}</p>
+                        <p className="text-xs text-slate-400">{req.customer_id?.city}</p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-sm font-medium text-slate-900">{req.product_id?.model_name || 'N/A'}</p>
+                        <p className="text-xs text-slate-500 font-mono">{req.product_id?.serial_number}</p>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(req.status)}
+                      </td>
+                      <td className="px-6 py-4">
+                        {req.assigned_engineer ? (
+                          <p className="text-sm font-medium text-slate-900">{req.assigned_engineer.name}</p>
                         ) : (
-                          <p className="text-sm text-slate-400 italic">Unassigned</p>
-                        )
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {req.proof_image_url && (
-                          <button
-                            onClick={() => setProofTarget(req.proof_image_url)}
-                            className="p-1.5 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                            title="View Proof"
-                          >
-                            <ImageIcon className="w-4 h-4" />
-                          </button>
+                          (user.role === 'super_admin' || user.role === 'service_center') ? (
+                            <button 
+                              onClick={() => setAssignTarget(req)}
+                              className="flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded border border-blue-100 transition-colors"
+                            >
+                              <UserCheck className="w-3.5 h-3.5 mr-1" />
+                              Assign
+                            </button>
+                          ) : (
+                            <p className="text-sm text-slate-400 italic">Unassigned</p>
+                          )
                         )}
-                        <button 
-                          onClick={() => setTimelineTarget(req)}
-                          className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"
-                          title="View Timeline"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {req.proof_image_url && (
+                            <button
+                              onClick={() => setProofTarget(req.proof_image_url)}
+                              className="p-1.5 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                              title="View Proof"
+                            >
+                              <ImageIcon className="w-4 h-4" />
+                            </button>
+                          )}
+                          <button 
+                            onClick={() => setTimelineTarget(req)}
+                            className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"
+                            title="View Timeline"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
         
         {/* Pagination */}

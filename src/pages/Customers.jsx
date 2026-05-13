@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { UserCircle, Search, MapPin } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import TableSkeleton from '../components/TableSkeleton';
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
@@ -52,22 +53,23 @@ const Customers = () => {
         </div>
         
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-slate-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Customer Info</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Contact</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Location</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Registered</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
-              {loading ? (
-                <tr><td colSpan="4" className="px-6 py-8 text-center text-slate-500">Loading...</td></tr>
-              ) : customers.length === 0 ? (
-                <tr><td colSpan="4" className="px-6 py-8 text-center text-slate-500">No customers found</td></tr>
-              ) : (
-                customers.map((customer) => (
+          {loading ? (
+            <TableSkeleton rows={8} columns={4} />
+          ) : (
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead className="bg-slate-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Customer Info</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Contact</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Location</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Registered</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-slate-200">
+                {customers.length === 0 ? (
+                  <tr><td colSpan="4" className="px-6 py-8 text-center text-slate-500 italic">No customers found matching your search.</td></tr>
+                ) : (
+                  customers.map((customer) => (
                   <tr key={customer._id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center">
@@ -101,7 +103,8 @@ const Customers = () => {
               )}
             </tbody>
           </table>
-        </div>
+        )}
+      </div>
 
         {/* Pagination */}
         {pagination.pages > 1 && (
